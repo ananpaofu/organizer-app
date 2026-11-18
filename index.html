@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#6f9382" />
+  <meta name="description" content="收纳小管家 · 记录物品、到期提醒、定位标签一键查找，让收纳更轻松" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="收纳小管家" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg" />
+  <link rel="apple-touch-icon" href="icons/icon.svg" />
+  <title>收纳小管家</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="ambient ambient-a"></div>
+  <div class="ambient ambient-b"></div>
+
+  <div class="device-frame">
+    <div class="device-screen">
+      <div class="status-bar">
+        <span class="sb-time" id="sb-time">9:41</span>
+        <div class="sb-right">
+          <svg viewBox="0 0 20 14" width="17" height="12" fill="currentColor"><rect x="0" y="9" width="3" height="5" rx="1"/><rect x="5" y="6" width="3" height="8" rx="1"/><rect x="10" y="3" width="3" height="11" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/></svg>
+          <svg viewBox="0 0 18 14" width="16" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1 4.5a12 12 0 0 1 16 0M3.5 7.5a8.5 8.5 0 0 1 11 0M6 10.5a5 5 0 0 1 6 0"/><circle cx="9" cy="13" r="1" fill="currentColor" stroke="none"/></svg>
+          <svg viewBox="0 0 26 13" width="22" height="12" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="21" height="11" rx="3"/><rect x="3" y="3" width="15" height="7" rx="1.5" fill="currentColor" stroke="none"/><path d="M24 4.5v4a2 2 0 0 0 0-4Z" fill="currentColor" stroke="none"/></svg>
+        </div>
+      </div>
+
+      <div class="screen-scroll" id="app-view"></div>
+
+      <nav class="bottom-nav" id="bottom-nav"></nav>
+      <div class="home-indicator"></div>
+
+      <div id="sheet-root"></div>
+      <div id="overlay-root"></div>
+      <div id="toast-root" class="toast-root"></div>
+    </div>
+    <div class="device-notch"></div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('sw.js').catch(function () {});
+      });
+    }
+  </script>
+</body>
+</html>

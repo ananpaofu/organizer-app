@@ -1,0 +1,15 @@
+{
+  "name": "收纳小管家",
+  "short_name": "收纳管家",
+  "description": "记录物品、到期提醒、定位标签一键查找，让收纳更轻松",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f7f3ee",
+  "theme_color": "#6f9382",
+  "lang": "zh-CN",
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
