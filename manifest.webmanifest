@@ -4,7 +4,7 @@
   "description": "记录物品、到期提醒、定位标签一键查找，让收纳更轻松",
   "start_url": ".",
   "scope": ".",
-  "display": "standalone",
+  "display": "fullscreen",
   "orientation": "portrait",
   "background_color": "#f7f3ee",
   "theme_color": "#6f9382",
