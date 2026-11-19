@@ -1,4 +1,4 @@
-const CACHE = 'organizer-app-v5';
+const CACHE = 'organizer-app-v6';
 const INDEX_URL = new URL('./index.html', self.location.href).href;
 const ASSETS = [
   './',

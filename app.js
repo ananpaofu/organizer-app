@@ -406,6 +406,7 @@
     if (state.view === 'alerts') return alertsHTML();
     if (state.view === 'guide') return guideHTML();
     if (state.view === 'community') return communityHTML();
+    if (state.view === 'chat') return chatListPageHTML();
     if (state.view === 'hub') return hubHTML();
     if (state.view === 'device') return deviceHTML();
     if (state.view === 'profile') return profileHTML();
@@ -756,14 +757,10 @@
   /* ---------------- Function Hub ---------------- */
 
   const HUB_FEATURES = [
-    { key: 'feed', label: '社区动态', desc: '看看大家的收纳灵感', icon: 'users', nav: 'community', tab: 'feed', color: 'mint' },
-    { key: 'chat', label: '消息聊天', desc: '和同好交流心得', icon: 'comment', nav: 'community', tab: 'chat', color: 'clay' },
-    { key: 'items', label: '我的物品', desc: '查看全部收纳记录', icon: 'box', nav: 'home', color: 'mint' },
-    { key: 'map', label: '收纳地图', desc: '按位置快速找东西', icon: 'pin', nav: 'home', tab: 'map', color: 'clay' },
-    { key: 'device', label: '设备联动', desc: '定位标签一键查找', icon: 'signal', nav: 'device', color: 'mint' },
-    { key: 'alerts', label: '到期提醒', desc: '临期物品优先处理', icon: 'bell', nav: 'alerts', color: 'clay' },
-    { key: 'guide', label: '使用指南', desc: '第一次用也不迷茫', icon: 'book', nav: 'guide', color: 'mint' },
-    { key: 'profile', label: '个人设置', desc: '资料、偏好与地图配置', icon: 'user', nav: 'profile', color: 'clay' }
+    { key: 'feed', label: '社区动态', desc: '看看大家的收纳灵感', icon: 'users', nav: 'community', color: 'mint' },
+    { key: 'chat', label: '消息聊天', desc: '和同好一对一交流', icon: 'comment', nav: 'chat', color: 'clay' },
+    { key: 'map', label: '收纳地图', desc: '按位置快速找东西', icon: 'pin', nav: 'home', tab: 'map', color: 'mint' },
+    { key: 'alerts', label: '到期提醒', desc: '临期物品优先处理', icon: 'bell', nav: 'alerts', color: 'clay' }
   ];
 
   function hubHTML() {
@@ -782,12 +779,7 @@
           '<b>' + escapeHTML(f.label) + '</b><small>' + escapeHTML(f.desc) + '</small>' +
         '</button>';
       }).join('') + '</div>' +
-      (list.length ? '' : '<div class="empty"><h3>没有找到相关功能</h3><p>试试「查找」「地图」「提醒」</p></div>') +
-      '<button class="hub-community-entry" data-action="hub-go" data-nav-target="community" data-tab="feed">' +
-        '<span class="hub-ico">' + ICON.users + '</span>' +
-        '<span><b>社区一角</b><small>看看大家的收纳灵感与最新动态</small></span>' +
-        '<span class="hub-arrow">›</span>' +
-      '</button>' +
+      (list.length ? '' : '<div class="empty"><h3>没有找到相关功能</h3><p>试试「地图」「提醒」「社区」</p></div>') +
     '</div>';
   }
 
@@ -798,14 +790,23 @@
       '<div class="section-head community-head" style="margin-top:12px">' +
         '<button class="icon-btn" data-action="back" title="返回">' + ICON.back + '</button>' +
         '<h2 style="flex:1;margin-left:8px">社区</h2>' +
-        '<button class="icon-btn" data-action="back" title="关闭">' + ICON.close + '</button>' +
+        '<button class="icon-btn" data-nav="chat" title="消息聊天">' + ICON.comment + '</button>' +
       '</div>' +
-      '<p class="community-sub">和收纳同好交流，看看大家的新鲜动态</p>' +
-      '<div class="section-head mini-head"><h3>消息 · 聊天</h3><span>点开就能聊</span></div>' +
-      '<div class="chat-list-panel">' + chatListHTML() + '</div>' +
-      '<div class="section-head mini-head"><h3>社区动态</h3><span>最新分享</span></div>' +
+      '<p class="community-sub">看看大家的收纳灵感与最新分享</p>' +
       '<div id="community-content">' + feedHTML() + '</div>' +
       '<button class="fab-post" data-action="new-post">' + ICON.plus + '</button>' +
+      '</div>';
+  }
+
+  function chatListPageHTML() {
+    return '<div class="page">' +
+      '<div class="section-head community-head" style="margin-top:12px">' +
+        '<button class="icon-btn" data-action="back" title="返回">' + ICON.back + '</button>' +
+        '<h2 style="flex:1;margin-left:8px">消息聊天</h2>' +
+        '<button class="icon-btn" data-nav="community" title="社区动态">' + ICON.users + '</button>' +
+      '</div>' +
+      '<p class="community-sub">和收纳同好一对一交流</p>' +
+      '<div class="chat-list-panel">' + chatListHTML() + '</div>' +
       '</div>';
   }
 
@@ -1577,12 +1578,14 @@
     return '<div class="page">' +
       '<div class="profile-head"><div class="profile-avatar">' + escapeHTML(name.charAt(0).toUpperCase()) + '</div>' +
         '<h2>' + escapeHTML(name) + '</h2><p>@' + escapeHTML(user.username) + '</p></div>' +
+      '<div class="section-head"><h2>个人设置</h2><span>资料与偏好</span></div>' +
       '<form id="profile-form" class="info-card">' +
         '<div class="field"><label>昵称</label><input id="pf-name" maxlength="30" value="' + escapeHTML(p.name || '') + '"></div>' +
         '<div class="field"><label>联系方式</label><input id="pf-contact" maxlength="60" value="' + escapeHTML(p.contact || '') + '" placeholder="手机号或邮箱"></div>' +
         '<div class="field"><label>个人备注</label><textarea id="pf-bio" rows="3" maxlength="300" placeholder="关于收纳习惯的一些记录">' + escapeHTML(p.bio || '') + '</textarea></div>' +
         '<button type="submit" class="btn primary block">保存资料</button>' +
       '</form>' +
+      '<div class="section-head" style="margin-top:18px"><h3>更多</h3></div>' +
       '<button class="chat-row" data-nav="guide" style="width:100%;cursor:pointer">' +
         '<div class="chat-avatar">' + ICON.book + '</div><div class="chat-info"><b>使用指南</b><p>查看操作步骤与颜色说明</p></div><span class="chat-time">›</span></button>' +
       '<div class="info-card" style="text-align:center;color:var(--ink-soft);font-size:12px">' +
@@ -1603,7 +1606,6 @@
       case 'show-hub': state.view = 'hub'; renderApp(true); break;
       case 'hub-go':
         state.view = el.dataset.navTarget || 'hub';
-        if (el.dataset.tab === 'feed' || el.dataset.tab === 'chat') state.communityTab = el.dataset.tab;
         if (el.dataset.tab === 'map') { state.view = 'home'; state.itemsOpen = true; }
         vibrate(10); renderApp(true); break;
       case 'clear-hub-search': state.hubSearch = ''; renderApp(); break;
@@ -1633,9 +1635,8 @@
       case 'close-overlay': closeOverlay(); break;
       case 'close-chat': closeOverlay(); state.chatId = null; break;
       case 'back':
-        if (state.view === 'community') state.view = 'hub';
+        if (state.view === 'community' || state.view === 'chat') state.view = 'hub';
         else state.view = (state.backTo === 'profile') ? 'profile' : 'home';
-        state.communityTab = 'feed';
         renderApp(true); break;
       case 'filter':
         state.filter = el.dataset.value;
@@ -1669,9 +1670,9 @@
         if (post) { post.liked = !post.liked; post.likes = (post.likes || 0) + (post.liked ? 1 : -1); saveDB(); renderApp(); }
         break;
       case 'comment-post':
-        state.communityTab = 'chat';
+        state.view = 'chat';
         state.chatId = 'c1';
-        renderApp();
+        renderApp(true);
         openChat('c1');
         break;
       case 'open-chat': openChat(el.dataset.id); break;
