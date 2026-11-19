@@ -2,6 +2,8 @@
   'use strict';
 
   const DB_KEY = 'organizer_db_v1';
+  const AUTO_LOGIN = true;
+  const GUEST_USER_ID = 'local_user';
 
   const CATEGORIES = [
     { key: 'food', label: '食品', color: '#d8a99b' },
@@ -245,12 +247,34 @@
     catch (e) { toast('保存失败：本地存储空间不足', 'error'); }
   }
 
+  function ensureGuestUser() {
+    if (!AUTO_LOGIN) return;
+    let guest = db.users.find(function (u) { return u.id === GUEST_USER_ID; });
+    if (!guest) {
+      guest = {
+        id: GUEST_USER_ID,
+        username: 'local_user',
+        password: '',
+        profile: { name: '我的收纳', contact: '', bio: '' },
+        createdAt: new Date().toISOString()
+      };
+      db.users.push(guest);
+    }
+    if (!db.session || !db.users.some(function (u) { return u.id === db.session; })) {
+      db.session = GUEST_USER_ID;
+      saveDB();
+    }
+  }
+
   function uid() { return 'id_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
 
   function currentUser() {
+    if (AUTO_LOGIN) ensureGuestUser();
     if (!db.session) return null;
     return db.users.find(function (u) { return u.id === db.session; }) || null;
   }
+
+  ensureGuestUser();
 
   function getUserItems() {
     const user = currentUser();
@@ -350,27 +374,8 @@
 
   function renderAuth() {
     closeOverlay();
-    $('#bottom-nav').classList.add('hidden');
-    $('#app-view').innerHTML =
-      '<div class="page auth-page">' +
-        '<div class="auth-art"><div class="auth-orb">' + ICON.box + '</div>' +
-          '<h1>收纳小管家</h1><p>让每件物品，都有迹可循</p></div>' +
-        '<div class="auth-card">' +
-          '<div class="segment">' +
-            '<button data-action="auth-tab" data-value="login" class="' + (state.authTab === 'login' ? 'active' : '') + '">登录</button>' +
-            '<button data-action="auth-tab" data-value="register" class="' + (state.authTab === 'register' ? 'active' : '') + '">注册</button>' +
-          '</div>' +
-          '<form id="auth-form">' +
-            '<div class="field"><label>用户名</label><input id="auth-username" autocomplete="username" placeholder="请输入用户名"></div>' +
-            (state.authTab === 'register'
-              ? '<div class="field"><label>昵称（选填）</label><input id="auth-nickname" placeholder="希望我们怎么称呼你"></div>' : '') +
-            '<div class="field"><label>密码</label><input id="auth-password" type="password" autocomplete="current-password" placeholder="请输入密码"></div>' +
-            '<div class="form-error" id="auth-error"></div>' +
-            '<button type="submit" class="btn primary block">' + (state.authTab === 'login' ? '登录' : '注册并进入') + '</button>' +
-          '</form>' +
-        '</div>' +
-        '<div class="auth-foot">数据保存在当前设备中 · 无需联网</div>' +
-      '</div>';
+    ensureGuestUser();
+    renderApp(true);
   }
 
   /* ---------------- Navigation ---------------- */
@@ -1581,8 +1586,7 @@
       '<button class="chat-row" data-nav="guide" style="width:100%;cursor:pointer">' +
         '<div class="chat-avatar">' + ICON.book + '</div><div class="chat-info"><b>使用指南</b><p>查看操作步骤与颜色说明</p></div><span class="chat-time">›</span></button>' +
       '<div class="info-card" style="text-align:center;color:var(--ink-soft);font-size:12px">' +
-        '注册于 ' + formatDate(String(user.createdAt || '').slice(0, 10)) + ' · 已收纳 ' + getUserItems().length + ' 件物品</div>' +
-      '<button class="btn ghost block" data-action="logout" style="color:#c98d86">退出登录</button>' +
+        '创建于 ' + formatDate(String(user.createdAt || '').slice(0, 10)) + ' · 已收纳 ' + getUserItems().length + ' 件物品</div>' +
       '</div>';
   }
 
@@ -1591,7 +1595,7 @@
   function handleAction(action, el) {
     switch (action) {
       case 'auth-tab':
-        state.authTab = el.dataset.value; renderAuth(); break;
+        break;
       case 'add-item': openItemSheet(); break;
       case 'edit-item': openItemSheet(el.dataset.id); break;
       case 'delete-item': deleteItem(el.dataset.id); break;
@@ -1808,11 +1812,8 @@
         break;
       case 'sample': loadSampleData(); break;
       case 'logout':
-        closeOverlay(); closeSheet();
-        db.session = null; saveDB();
-        state.view = 'home'; state.search = ''; state.filter = 'all';
-        state.authTab = 'login'; lastView = null;
-        render(); toast('已退出登录'); break;
+        toast('当前版本无需登录');
+        break;
       default: break;
     }
   }
@@ -1889,24 +1890,9 @@
 
     if (form.id === 'auth-form') {
       e.preventDefault();
-      const username = $('#auth-username').value.trim();
-      const password = $('#auth-password').value;
-      const errorEl = $('#auth-error');
-      errorEl.textContent = '';
-      if (!username || !password) { errorEl.textContent = '请填写用户名和密码'; return; }
-      if (state.authTab === 'register') {
-        if (db.users.some(function (u) { return u.username === username; })) { errorEl.textContent = '该用户名已被注册'; return; }
-        const nickname = $('#auth-nickname').value.trim() || username;
-        const user = { id: uid(), username: username, password: password,
-          profile: { name: nickname, contact: '', bio: '' }, createdAt: new Date().toISOString() };
-        db.users.push(user); db.session = user.id; saveDB();
-        state.view = 'home'; toast('注册成功'); render();
-      } else {
-        const user = db.users.find(function (u) { return u.username === username && u.password === password; });
-        if (!user) { errorEl.textContent = '用户名或密码错误'; return; }
-        db.session = user.id; saveDB();
-        state.view = 'home'; toast('登录成功'); render();
-      }
+      ensureGuestUser();
+      state.view = 'home';
+      render();
       return;
     }
 
@@ -2022,6 +2008,11 @@
   }
 
   function render() {
+    if (AUTO_LOGIN) {
+      ensureGuestUser();
+      renderApp(true);
+      return;
+    }
     if (currentUser()) renderApp(true);
     else renderAuth();
   }
