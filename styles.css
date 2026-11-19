@@ -566,19 +566,21 @@ button { cursor: pointer; border: none; background: none; }
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: none; } }
 
 @media (max-width: 480px) {
-  body { padding: 0; display: block; background: var(--cream); }
+  body { padding: 0; display: block; background: var(--cream); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
   .ambient { display: none; }
   .device-frame { width: 100vw; height: 100vh; height: 100dvh; max-height: none; border: none; border-radius: 0; padding: 0; box-shadow: none; }
   .device-screen { border-radius: 0; }
   .device-notch { display: none; }
   .status-bar { display: none; }
-  .page { padding-left: 18px; padding-right: 18px; }
-  .home-indicator { background: #cfc9c0; }
+  .page { padding: 6px 18px 88px; animation: none; }
+  .bottom-nav { position: fixed; height: 70px; padding: 0 8px 8px; }
+  .home-indicator { display: none; }
   .nav-add { width: 42px; height: 42px; margin: 0 auto; border-radius: 14px; box-shadow: 0 4px 10px rgba(127, 160, 141, .25); animation: none; }
 }
 
 html.standalone .device-screen { padding-top: env(safe-area-inset-top, 0px); box-sizing: border-box; }
 html.standalone .pull-indicator { top: calc(env(safe-area-inset-top, 0px) + 8px); }
+html.standalone .home-indicator { display: none; }
 
 /* ============================================================
    Design system upgrade · "收纳手账"
