@@ -1,4 +1,5 @@
-const CACHE = 'organizer-app-v4';
+const CACHE = 'organizer-app-v5';
+const INDEX_URL = new URL('./index.html', self.location.href).href;
 const ASSETS = [
   './',
   './index.html',
@@ -18,17 +19,35 @@ self.addEventListener('activate', function (e) {
   }).then(function () { return self.clients.claim(); }));
 });
 
+self.addEventListener('message', function (e) {
+  if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
+});
+
 self.addEventListener('fetch', function (e) {
   if (e.request.method !== 'GET') return;
-  e.respondWith(
-    caches.match(e.request).then(function (cached) {
-      return cached || fetch(e.request).then(function (res) {
-        if (res && res.status === 200 && e.request.url.indexOf(location.origin) === 0) {
+
+  if (e.request.mode === 'navigate') {
+    e.respondWith(
+      fetch(e.request).then(function (res) {
+        if (res && res.status === 200) {
           const copy = res.clone();
           caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
         }
         return res;
-      }).catch(function () { return caches.match('./index.html'); });
-    })
+      }).catch(function () {
+        return caches.match(e.request) || caches.match(INDEX_URL);
+      })
+    );
+    return;
+  }
+
+  e.respondWith(
+    fetch(e.request).then(function (res) {
+      if (res && res.status === 200 && e.request.url.indexOf(location.origin) === 0) {
+        const copy = res.clone();
+        caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
+      }
+      return res;
+    }).catch(function () { return caches.match(e.request); })
   );
 });
