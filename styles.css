@@ -571,10 +571,14 @@ button { cursor: pointer; border: none; background: none; }
   .device-frame { width: 100vw; height: 100vh; height: 100dvh; max-height: none; border: none; border-radius: 0; padding: 0; box-shadow: none; }
   .device-screen { border-radius: 0; }
   .device-notch { display: none; }
-  .status-bar { height: 44px; padding: 6px 24px 0; }
+  .status-bar { display: none; }
   .page { padding-left: 18px; padding-right: 18px; }
   .home-indicator { background: #cfc9c0; }
+  .nav-add { width: 42px; height: 42px; margin: 0 auto; border-radius: 14px; box-shadow: 0 4px 10px rgba(127, 160, 141, .25); animation: none; }
 }
+
+html.standalone .device-screen { padding-top: env(safe-area-inset-top, 0px); box-sizing: border-box; }
+html.standalone .pull-indicator { top: calc(env(safe-area-inset-top, 0px) + 8px); }
 
 /* ============================================================
    Design system upgrade · "收纳手账"
@@ -743,6 +747,9 @@ button { cursor: pointer; border: none; background: none; }
 .pull-indicator.ready svg { transform: rotate(180deg); }
 
 .nav-add { animation: addBreathe 3.5s ease-in-out infinite; }
+@media (max-width: 480px) {
+  .nav-add { animation: none; }
+}
 .nav-item.active { position: relative; }
 .nav-item.active::after {
   content: ""; position: absolute; bottom: -3px; width: 4px; height: 4px;

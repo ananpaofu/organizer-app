@@ -1,4 +1,4 @@
-const CACHE = 'organizer-app-v2';
+const CACHE = 'organizer-app-v3';
 const ASSETS = [
   './',
   './index.html',
